@@ -130,17 +130,17 @@ const FileUploader = () => {
                                         justifyContent: "space-between",
                                         gap: "2rem"
                                     }}>
-                                        <button style={{
-                                            border: "1px solid black",
-                                            display: "flex",
-                                            flexDirection: "row",
-                                            justifyContent: "center",
-                                            padding: "1rem",
-                                            borderRadius: "30px",
-                                            marginTop: "1rem"
-                                        }} onClick={generateCourseWithGPT4Vision}>
-                                            Use GPT4 Vision
-                                        </button>
+                                        {/*<button style={{*/}
+                                        {/*    border: "1px solid black",*/}
+                                        {/*    display: "flex",*/}
+                                        {/*    flexDirection: "row",*/}
+                                        {/*    justifyContent: "center",*/}
+                                        {/*    padding: "1rem",*/}
+                                        {/*    borderRadius: "30px",*/}
+                                        {/*    marginTop: "1rem"*/}
+                                        {/*}} onClick={generateCourseWithGPT4Vision}>*/}
+                                        {/*    Use GPT4 Vision*/}
+                                        {/*</button>*/}
                                         <button style={{
                                             border: "1px solid black",
                                             display: "flex",
