@@ -56,6 +56,7 @@ const FileUploader = () => {
 
     const generateCourseWithRAG = () => {
         if (selectedFile) {
+            let start = Date.now()
             setLoading(true)
             let formData = new FormData();
             formData.append("file", selectedFile, selectedFile.name);
@@ -70,6 +71,8 @@ const FileUploader = () => {
             fetch(process.env.RAG_API_URL, requestOptions)
                 .then(response => response.text())
                 .then(result => {
+                    let end = Date.now()
+                    setElapsedTime(end - start)
                     setGeneratedCourse(JSON.parse(result).result)
                     setLoading(false)
                 })
@@ -80,7 +83,7 @@ const FileUploader = () => {
     return (
         <div>
             <div style={{ marginBottom: "2rem", fontSize: "1.5rem", fontWeight: "700" }}>This demo only creates 3 slides based on <a style={{ color: "blue", textDecoration: "underline" }} target="_blank" href="https://github.com/aicam/AI_course_generator/blob/master/mlops/templates/basic.json">basic</a> template</div>
-            {elapsedTime ? (<div style={{ marginBottom: "2rem", fontSize: "1.5rem", fontWeight: "700" }}><strong style={{ color: "red" }}>Elapsed Time:</strong> {elapsedTime}</div>) : (<></>)}
+            {elapsedTime ? (<div style={{ marginBottom: "2rem", fontSize: "1.5rem", fontWeight: "700" }}><strong style={{ color: "red" }}>Elapsed Time:</strong> {elapsedTime /1000} Seconds</div>) : (<></>)}
             {
                 !generatedCourse ? loading ? (
                     <div>is processing ....</div>
