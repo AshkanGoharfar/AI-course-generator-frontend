@@ -6,6 +6,7 @@ const FileUploader = () => {
     const [selectedFile, setSelectedFile] = useState<any>(null);
     const [generatedCourse, setGeneratedCourse] = useState<any>(null)
     const [loading, setLoading] = useState(false)
+    const [elapsedTime, setElapsedTime] = useState<any>(null)
 
     const handleFileChange = (e: any) => {
         const file = e.target.files[0];
@@ -29,6 +30,7 @@ const FileUploader = () => {
 
     const generateCourseWithGPT4Vision = () => {
         if (selectedFile) {
+            let start = Date.now()
             setLoading(true)
             let formData = new FormData();
             formData.append("file", selectedFile, selectedFile.name);
@@ -40,9 +42,11 @@ const FileUploader = () => {
             };
 
             // @ts-ignore
-            fetch(process.env.RAG_API_URL, requestOptions)
+            fetch(process.env.GPT4_API_URL, requestOptions)
                 .then(response => response.text())
                 .then(result => {
+                    let end = Date.now()
+                    setElapsedTime(end - start)
                     setGeneratedCourse(JSON.parse(result).result)
                     setLoading(false)
                 })
@@ -74,7 +78,9 @@ const FileUploader = () => {
     }
 
     return (
-        <>
+        <div>
+            <div style={{ marginBottom: "2rem", fontSize: "1.5rem", fontWeight: "700" }}>This demo only creates 3 slides based on <a style={{ color: "blue", textDecoration: "underline" }} target="_blank" href="https://github.com/aicam/AI_course_generator/blob/master/mlops/templates/basic.json">basic</a> template</div>
+            {elapsedTime ? (<div style={{ marginBottom: "2rem", fontSize: "1.5rem", fontWeight: "700" }}><strong style={{ color: "red" }}>Elapsed Time:</strong> {elapsedTime}</div>) : (<></>)}
             {
                 !generatedCourse ? loading ? (
                     <div>is processing ....</div>
@@ -101,6 +107,7 @@ const FileUploader = () => {
                                 <p>{selectedFile.name}</p>
                             </div>
                         )}
+
 
                         {
                             selectedFile ? (
@@ -155,7 +162,8 @@ const FileUploader = () => {
                         flexDirection: "column"
                     }}
                     >
-                        <div style={{ marginBottom: "2rem" }}>Number of slides: {generatedCourse?.num_slides}</div>
+                        <div style={{ marginBottom: "1rem" }}>********************************************************************</div>
+                        <div><strong>Slide title:</strong> {generatedCourse.slides[0]?.header?.output?.answer}</div>
                         <div>********************************************************************</div>
                         {
                             generatedCourse?.slides && generatedCourse.slides.length &&  generatedCourse.slides.map((slide: any, index: number) => (
@@ -164,9 +172,11 @@ const FileUploader = () => {
                                     justifyContent: "start",
                                     alignItems: "start",
                                     flexDirection: "column",
-                                    marginBottom: "1rem"
+                                    marginTop: "1rem"
                                 }}>
-                                    <div><strong>Slide title:</strong> {slide?.header?.output?.answer}</div>
+                                    <div><strong>Slide title:</strong> {
+                                        index === 0 ? "Agenda" : slide?.header?.output?.answer
+                                    }</div>
                                     <div><strong>Slide Content:</strong></div>
                                     {
                                         slide?.body && slide.body.length &&  slide.body.map((slideContent: any, contentIndex: number) => (
@@ -175,8 +185,12 @@ const FileUploader = () => {
                                                     slideContent.component_name === "shortdescription" ? (
                                                         <div>{slideContent.output.answer}</div>
                                                     ) : slideContent.component_name === "bulletpoints" ? (
-                                                        <div>{slideContent?.output?.answer.split(slideContent.delimiter) && slideContent?.output?.answer.split(slideContent.delimiter).length && slideContent?.output?.answer.split(slideContent.delimiter).map((bulletPoint: any, bulletPointIndex: number) => (
-                                                            <div key={bulletPointIndex}>* {bulletPoint}</div>
+                                                        <div>{slideContent?.output?.answer.replaceAll(".", "").split(slideContent.delimiter) && slideContent?.output?.answer.split(slideContent.delimiter).length && slideContent?.output?.answer.split(slideContent.delimiter).map((bulletPoint: any, bulletPointIndex: number) => (
+                                                            <>
+                                                            {
+                                                                bulletPoint.replaceAll(".", "") ? (<div key={bulletPointIndex}>* {bulletPoint.replaceAll(".", "").replaceAll("-", "")}</div>) : (<></>)
+                                                            }
+                                                            </>
                                                         ))}</div>
                                                     ) : (<></>)
                                                 }
@@ -203,7 +217,7 @@ const FileUploader = () => {
                     </div>
                 )
             }
-        </>
+        </div>
     )
 };
 
